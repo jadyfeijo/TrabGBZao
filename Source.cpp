@@ -1,17 +1,17 @@
 //*****************************************************************************
 // Projeto OpenGL utilizando GLFW 
 //
-// Desenho b·sico baseado no livro "OpenGL - Uma Abordagem Pr·tica e Objetiva"
+// Desenho b√°sico baseado no livro "OpenGL - Uma Abordagem Pr√°tica e Objetiva"
 //
 // Disponibilizado por Vini Cassol - 15/08/2019
-// Novembro - 2019 - VisualizaÁ„o 3D
+// Novembro - 2019 - Visualiza√ß√£o 3D
 //******************************************************************************
 
 #include <iostream>
-#include "Render.h" //È a Render que est· incluindo a glfw!
+#include "Render.h" //√© a Render que est√° incluindo a glfw!
 using namespace std;
 
-//Algumas globais para interface e simulaÁ„o (IDEAL: criar uma classe gerenciadora)
+//Algumas globais para interface e simula√ß√£o (IDEAL: criar uma classe gerenciadora)
 float xMin = -20.0, xMax = 20.0, yMin = -20.0, yMax = 20.0; 
 
 float posx = 15.0;
@@ -20,26 +20,25 @@ float posz = -70.0;
 float alvox = 0.0;
 float alvoy = 0.0;
 float alvoz = 0.0;
-float ang = 25;
+float ang = 205;
 int proj = 1;
 
-float posXAtual = 0;
 float posZAtual = 0;
 
 void ajustaCamera2D(int width, int height)
 {
-	//Ativa a matriz de projeÁ„o --> conceitos mais tarde!!
+	//Ativa a matriz de proje√ß√£o --> conceitos mais tarde!!
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
 	if (width < height) //altura menor que largura
 	{
 		float aspecto = (float)height / width; //proporcao altura/largura 
-		gluOrtho2D(xMin, xMax, yMin * aspecto, yMax * aspecto); //corrige a proporÁ„o na largura
+		gluOrtho2D(xMin, xMax, yMin * aspecto, yMax * aspecto); //corrige a propor√ß√£o na largura
 	}
 	else {
 		float aspecto = (float)width / height; //proporcao largura/altura
-		gluOrtho2D(xMin * aspecto, xMax * aspecto, yMin, xMax); //corrige a proporÁ„o na altura
+		gluOrtho2D(xMin * aspecto, xMax * aspecto, yMin, xMax); //corrige a propor√ß√£o na altura
 
 	}
 }
@@ -52,7 +51,7 @@ void Visualizacao() {
 	else if (proj == 1)
 		gluPerspective(75, 1, 1, 10000);
 
-	//PosiÁ„o da camera
+	//Posi√ß√£o da camera
 	gluLookAt(posx, posy, posz+30, alvox, alvoy, alvoz, 0, 1, 0);
 }
 
@@ -65,7 +64,47 @@ void DesenhaCena() {
 	Visualizacao();
 
 	glRotatef(ang, 0, -1, 0);
-//referencias vetores
+
+	//faixas rodovia
+	
+	for (int i = 0; i <= 10; i++)
+	{
+		glBegin(GL_QUADS);
+		glColor3f(0.4, 0.4, 0.4);
+		glVertex3i(-120, -5, 35 - i * 10);
+		glVertex3i(-120, -5, 25 - i * 10);
+		glVertex3i(100, -5, 25 - i * 10);
+		glVertex3i(100, -5, 35 - i * 10);
+		glEnd();
+
+	}
+	glLineWidth(5);
+	for (int i = 1; i <= 10; i++)
+	{
+		glBegin(GL_LINES);
+
+		glColor3f(0.7, 0.7, 0.7);
+		glVertex3i(-35, -5, 35 - i * 10);
+		glVertex3i(-25, -5, 35 - i * 10);
+		glVertex3i(-15, -5, 35 - i * 10);
+		glVertex3i(-5, -5, 35 - i * 10);
+		glVertex3i(5, -5, 35 - i * 10);
+		glVertex3i(15, -5, 35 - i * 10);
+		glVertex3i(25, -5, 35 - i * 10);
+		glVertex3i(35, -5, 35 - i * 10);
+		glVertex3i(-35, -5, 35 - i * 10);
+		glVertex3i(-25, -5, 35 - i * 10);
+		glVertex3i(-35, -5, 35 - i * 10);
+		glVertex3i(-25, -5, 35 - i * 10);
+		glVertex3i(-35, -5, 35 - i * 10);
+		glVertex3i(-25, -5, 35 - i * 10);
+		glVertex3i(-35, -5, 35 - i * 10);
+		glVertex3i(-25, -5, 35 - i * 10);
+		glEnd();
+	}
+	glLineWidth(1);
+
+	//referencias vetores
 	glBegin(GL_LINES);
 	glColor3f(1, 0, 0);
 	glVertex3f(-10, 0, 0);
@@ -87,54 +126,52 @@ void DesenhaCena() {
 	glEnd();
 
 
-	//piramide QuÈops
+
+	//piramide Qu√©ops
 	glBegin(GL_QUADS);
-	glColor3f(0,0,0);
-	glVertex3i(-5+posXAtual, -5, -5+posZAtual);
-	glVertex3i(5 + posXAtual, -5, -5+posZAtual);
-	glVertex3i(5 + posXAtual, -5, 5 + posZAtual);
-	glVertex3i(-5 + posXAtual, -5, 5 + posZAtual);
+	glColor3f(0, 0, 0);
+	glVertex3i(-5, -5, 35 + posZAtual);
+	glVertex3i(5, -5, 35 + posZAtual);
+	glVertex3i(5, -5, 45 + posZAtual);
+	glVertex3i(-5, -5, 45 + posZAtual);
 	glEnd();
 
-	glBegin(GL_TRIANGLES);
-	// face voltada para eixo z positivo
-	glColor4f(1.0f, 0.0f, 0.0f, 0.5);
-	glVertex3i(5, -5, -5);
-	glVertex3i(5, -5, 5);
-	glVertex3i(0, 7, 0);
-	glEnd();
+	//glBegin(GL_TRIANGLES);
+	//// face voltada para eixo z positivo
+	//glColor4f(1.0f, 0.0f, 0.0f, 0.5);
+	//glVertex3i(5, -5, -5);
+	//glVertex3i(5, -5, 5);
+	//glVertex3i(0, 7, 0);
+	//glEnd();
+	//
+	//glBegin(GL_TRIANGLES);
+	//
+	//glColor4f(0.0f, 1.0f, 0.0f, 0.5);
+	//glVertex3i(-5, -5, 5);
+	//glVertex3i(5, -5, 5);
+	//glVertex3i(0, 7, 0);
+	//glEnd();
+	//
+	//glBegin(GL_TRIANGLES);
+	//
+	//glColor4f(0.0f, 0.0f, 1.0f, 0.5);
+	//glVertex3i(-5, -5, -5);
+	//glVertex3i(-5, -5, 5);
+	//glVertex3i(0, 7, 0);
+	//glEnd();
+	//
+	//glBegin(GL_TRIANGLES);
+	//
+	//glColor4f(0.0f, 1.0f, 1.0f, 0.5);
+	//glVertex3i(-5, -5, -5);
+	//glVertex3i(5, -5, -5);
+	//glVertex3i(0, 7, 0);
+	//glEnd();
 
-	glBegin(GL_TRIANGLES);
-		
-	glColor4f(0.0f, 1.0f, 0.0f, 0.5);
-	glVertex3i(-5, -5, 5);
-	glVertex3i(5, -5, 5);
-	glVertex3i(0, 7, 0);
-	glEnd();
 
-	glBegin(GL_TRIANGLES);
 
-	glColor4f(0.0f, 0.0f, 1.0f, 0.5);
-	glVertex3i(-5, -5, -5);
-	glVertex3i(-5, -5, 5);
-	glVertex3i(0, 7, 0);
-	glEnd();
 
-	glBegin(GL_TRIANGLES);
-
-	glColor4f(0.0f, 1.0f, 1.0f, 0.5);
-	glVertex3i(-5, -5, -5);
-	glVertex3i(5, -5, -5);
-	glVertex3i(0, 7, 0);
-	glEnd();
-
-//faixas rodovia
-	glBegin(GL_QUADS);
-	for(int i=0)
-	glColor3f(0.4, 0.4, 0.4);
-	glVertex3i
-	//piramide QuÈfren
-
+	//piramide Qu√©fren
 	//glBegin(GL_QUADS);
 	//glColor3f(0, 0, 0);
 	//glVertex3i(-20, -5, -20);
@@ -142,33 +179,33 @@ void DesenhaCena() {
 	//glVertex3i(-10, -5, -10);
 	//glVertex3i(-20, -5, -10);
 	//glEnd();
-
+	//
 	//glBegin(GL_TRIANGLES);
-
+	//
 	//glColor4f(1.0f, 1.0f, 0.0f, 0.5);
 	//glVertex3i(-10, -5, -10);
 	//glVertex3i(-10, -5, -20);
 	//glVertex3i(-15, 7, -15);
 	//glEnd();
-
+	//
 	//glBegin(GL_TRIANGLES);
-
+	//
 	//glColor4f(1.0f, 0.0f, 1.0f, 0.5);
 	//glVertex3i(-10, -5, -10);
 	//glVertex3i(-20, -5, -10);
 	//glVertex3i(-15, 7, -15);
 	//glEnd();
-
+	//
 	//glBegin(GL_TRIANGLES);
-
+	//
 	//glColor4f(1.0f, 0.0f, 0.5f, 0.5);
 	//glVertex3i(-20, -5, -10);
 	//glVertex3i(-20, -5, -20);
 	//glVertex3i(-15, 7, -15);
 	//glEnd();
-
+	//
 	//glBegin(GL_TRIANGLES);
-
+	//
 	//glColor4f(0.0f, 0.5f, 1.0f, 0.5);
 	//glVertex3i(-10, -5, -20);
 	//glVertex3i(-20, -5, -20);
@@ -178,7 +215,7 @@ void DesenhaCena() {
 
 
 	//piramide Miquerinos
-
+	//
 	//glBegin(GL_QUADS);
 	//glColor3f(0, 0, 0);
 	//glVertex3i(7, -5, 7);
@@ -186,33 +223,33 @@ void DesenhaCena() {
 	//glVertex3i(12, -5, 12);
 	//glVertex3i(7, -5, 12);
 	//glEnd();
-
+	//
 	//glBegin(GL_TRIANGLES);
-
+	//
 	//glColor4f(0.5f, 1.0f, 0.0f, 0.5);
 	//glVertex3i(12, -5, 7);
 	//glVertex3i(12, -5, 12);
 	//glVertex3i(9.5, 2.5, 9.5);
 	//glEnd();
-
+	//
 	//glBegin(GL_TRIANGLES);
-
+	//
 	//glColor4f(0.0f, 1.0f, 0.5f, 0.5);
 	//glVertex3i(7, -5, 12);
 	//glVertex3i(12, -5, 12);
 	//glVertex3i(9.5, 2.5, 9.5);
 	//glEnd();
-
+	//
 	//glBegin(GL_TRIANGLES);
-
+	//
 	//glColor4f(1.0f, 0.5f, 0.0f, 0.5);
 	//glVertex3i(7, -5, 7);
 	//glVertex3i(7, -5, 12);
 	//glVertex3i(9.5, 2.5, 9.5);
 	//glEnd();
-
+	//
 	//glBegin(GL_TRIANGLES);
-
+	//
 	//glColor4f(0.5f, 1.0f, 0.5f, 0.5);
 	//glVertex3i(7, -5, 7);
 	//glVertex3i(12, -5, 7);
@@ -222,13 +259,13 @@ void DesenhaCena() {
 	cout << ang << endl;
 }
 
-//Callback de erro - PADR√O DA GLFW - n„o precisa mexer
+//Callback de erro - PADR√ÉO DA GLFW - n√£o precisa mexer
 static void error_callback(int error, const char* description)
 {
 	fputs(description, stderr);
 }
 
-//Callback de teclado - PADR√O DA GLFW - alterar conforme desejar (teclas de controle do programa)
+//Callback de teclado - PADR√ÉO DA GLFW - alterar conforme desejar (teclas de controle do programa)
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -236,7 +273,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (key == GLFW_KEY_LEFT)
 		ang += 5;
-	
+
 	if (key == GLFW_KEY_RIGHT)
 		ang -= 5;
 
@@ -246,9 +283,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_P && action == GLFW_PRESS)
 		proj = 1;
 	if (key == GLFW_KEY_W)
-		posZAtual += 1;
+		posZAtual -= 5;
 	if (key == GLFW_KEY_S)
-		posZAtual -= 1;
+		posZAtual += 5;
 	//if (key == GLFW_KEY_A)
 	//	posXAtual += 1;
 	//if (key == GLFW_KEY_D)
@@ -259,8 +296,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main()
 {
 	
-	GLFWwindow* window; //InicializaÁ„o da janela da aplicaÁ„o
-	glfwSetErrorCallback(error_callback); //Setando a callback de erro - PADR√O
+	GLFWwindow* window; //Inicializa√ß√£o da janela da aplica√ß√£o
+	glfwSetErrorCallback(error_callback); //Setando a callback de erro - PADR√ÉO
 
 	if (!glfwInit()) //Inicializando a lib
 		exit(EXIT_FAILURE);
@@ -281,17 +318,17 @@ int main()
 	//Setando a callback de teclado
 	glfwSetKeyCallback(window, key_callback);
 	ajustaCamera2D(1280, 720);
-	while (!glfwWindowShouldClose(window)) //loop da aplicaÁ„o :)
+	while (!glfwWindowShouldClose(window)) //loop da aplica√ß√£o :)
 	{
 		float ratio;
 		int width, height;
 
-		//aqui recupera o tamanho atual da janela, para correÁ„o do aspect ratio mais tarde
+		//aqui recupera o tamanho atual da janela, para corre√ß√£o do aspect ratio mais tarde
 		glfwGetFramebufferSize(window, &width, &height);
-		//setando a viewport da OpenGL, para ocupar toda a janela da aplicaÁ„o
+		//setando a viewport da OpenGL, para ocupar toda a janela da aplica√ß√£o
 		glViewport(0, 0, width, height);
 
-		// Limpa a janela de visualizaÁ„o com a cor branca
+		// Limpa a janela de visualiza√ß√£o com a cor branca
 		glClearColor(1, 1, 1, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
