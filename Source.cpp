@@ -9,7 +9,12 @@
 
 #include <iostream>
 #include "Render.h" //é a Render que está incluindo a glfw!
+#include "Road.h"
+#include <ctime>
+
+#define MAX_ROAD 9
 using namespace std;
+
 
 //Algumas globais para interface e simulação (IDEAL: criar uma classe gerenciadora)
 float xMin = -20.0, xMax = 20.0, yMin = -20.0, yMax = 20.0; 
@@ -22,8 +27,34 @@ float alvoy = 0.0;
 float alvoz = 0.0;
 float ang = 205;
 int proj = 1;
-
+float posXAtual = 0;
 float posZAtual = 0;
+int instRoad = 0;
+
+float timer=0;
+
+Road roads[MAX_ROAD];
+Objeto player;
+
+Road inicializaRoad(Road road)
+{
+	
+
+		road.numObstaculos = rand()%(MAX_ENIMY-6)+6;
+
+		road.intervalo =(tamX_Road*2 - road.numObstaculos * tamX_Obstaculo) / (float)road.numObstaculos +5;
+		road.z = 10 * instRoad;
+
+		for (int j = 0; j < road.numObstaculos; j++)
+		{
+			road.obstaculos[j].x = (-tamX_Road / 2) +road.intervalo*j;
+			road.obstaculos[j].z = road.z+3;
+		}
+		instRoad++;
+	
+
+	return road;
+}
 
 void ajustaCamera2D(int width, int height)
 {
@@ -52,7 +83,7 @@ void Visualizacao() {
 		gluPerspective(75, 1, 1, 10000);
 
 	//Posição da camera
-	gluLookAt(posx, posy, posz+30, alvox, alvoy, alvoz, 0, 1, 0);
+	gluLookAt(posx, posy, posz+3, alvox, alvoy, alvoz, 0, 1, 0);
 }
 
 void DesenhaCena() {
@@ -64,199 +95,35 @@ void DesenhaCena() {
 	Visualizacao();
 
 	glRotatef(ang, 0, -1, 0);
+//referencias vetores
 
-	//faixas rodovia
+
+
+	for (int i = 0; i < MAX_ROAD; i++) {
+		if (player.z > roads[i].z) {
+			roads[i] = inicializaRoad(roads[i]);
+		}
+		roads[i].Draw();
+
+		for (int j=0; j <= roads[i].numObstaculos; j++) {
+			if (player.y >= roads[i].z && (player.x >= roads[i].obstaculos[j].x - 0.5 && player.x <= roads[i].obstaculos[j].x + 0.5))
+			{
+				printf("LOOOOOSE");
+			}
+
+
+			if (roads[i].obstaculos[j].x <= tamX_Road/2) {
+				roads[i].obstaculos[j].x += timer * 2;
+			}
+			else {
+				roads[i].obstaculos[j].x = -tamX_Road / 2;
+			}
+			roads[i].obstaculos[j].Draw();
+		}
+	}
+
 	
-	for (int i = 0; i <= 10; i++)
-	{
-		glBegin(GL_QUADS);
-		glColor3f(0.4, 0.4, 0.4);
-		glVertex3i(-120, -5, 35 - i * 10);
-		glVertex3i(-120, -5, 25 - i * 10);
-		glVertex3i(100, -5, 25 - i * 10);
-		glVertex3i(100, -5, 35 - i * 10);
-		glEnd();
-
-	}
-	glLineWidth(5);
-	for (int i = 1; i <= 10; i++)
-	{
-		glBegin(GL_LINES);
-
-		glColor3f(0.7, 0.7, 0.7);
-		glVertex3i(-35, -5, 35 - i * 10);
-		glVertex3i(-25, -5, 35 - i * 10);
-		glVertex3i(-15, -5, 35 - i * 10);
-		glVertex3i(-5, -5, 35 - i * 10);
-		glVertex3i(5, -5, 35 - i * 10);
-		glVertex3i(15, -5, 35 - i * 10);
-		glVertex3i(25, -5, 35 - i * 10);
-		glVertex3i(35, -5, 35 - i * 10);
-		glVertex3i(-35, -5, 35 - i * 10);
-		glVertex3i(-25, -5, 35 - i * 10);
-		glVertex3i(-35, -5, 35 - i * 10);
-		glVertex3i(-25, -5, 35 - i * 10);
-		glVertex3i(-35, -5, 35 - i * 10);
-		glVertex3i(-25, -5, 35 - i * 10);
-		glVertex3i(-35, -5, 35 - i * 10);
-		glVertex3i(-25, -5, 35 - i * 10);
-		glEnd();
-	}
-	glLineWidth(1);
-
-	//referencias vetores
-	glBegin(GL_LINES);
-	glColor3f(1, 0, 0);
-	glVertex3f(-10, 0, 0);
-	glVertex3f(10, 0, 0);
-	glVertex3f(9, 0, -2);
-	glVertex3f(9, 0, 2);
-
-	glColor3f(0, 1, 0);
-	glVertex3f(0, -10, 0);
-	glVertex3f(0, 10, 0);
-	glVertex3f(-2, 9, 0);
-	glVertex3f(2, 9, 0);
-
-	glColor3f(0, 0, 1);
-	glVertex3f(0, 0, -10);
-	glVertex3f(0, 0, 10);
-	glVertex3f(-2, 0, 9);
-	glVertex3f(2, 0, 9);
-	glEnd();
-
-
-
-	//piramide Quéops
-	glBegin(GL_QUADS);
-	glColor3f(0, 0, 0);
-	glVertex3i(-5, -5, 35 + posZAtual);
-	glVertex3i(5, -5, 35 + posZAtual);
-	glVertex3i(5, -5, 45 + posZAtual);
-	glVertex3i(-5, -5, 45 + posZAtual);
-	glEnd();
-
-	//glBegin(GL_TRIANGLES);
-	//// face voltada para eixo z positivo
-	//glColor4f(1.0f, 0.0f, 0.0f, 0.5);
-	//glVertex3i(5, -5, -5);
-	//glVertex3i(5, -5, 5);
-	//glVertex3i(0, 7, 0);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(0.0f, 1.0f, 0.0f, 0.5);
-	//glVertex3i(-5, -5, 5);
-	//glVertex3i(5, -5, 5);
-	//glVertex3i(0, 7, 0);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(0.0f, 0.0f, 1.0f, 0.5);
-	//glVertex3i(-5, -5, -5);
-	//glVertex3i(-5, -5, 5);
-	//glVertex3i(0, 7, 0);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(0.0f, 1.0f, 1.0f, 0.5);
-	//glVertex3i(-5, -5, -5);
-	//glVertex3i(5, -5, -5);
-	//glVertex3i(0, 7, 0);
-	//glEnd();
-
-
-
-
-	//piramide Quéfren
-	//glBegin(GL_QUADS);
-	//glColor3f(0, 0, 0);
-	//glVertex3i(-20, -5, -20);
-	//glVertex3i(-10, -5, -20);
-	//glVertex3i(-10, -5, -10);
-	//glVertex3i(-20, -5, -10);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(1.0f, 1.0f, 0.0f, 0.5);
-	//glVertex3i(-10, -5, -10);
-	//glVertex3i(-10, -5, -20);
-	//glVertex3i(-15, 7, -15);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(1.0f, 0.0f, 1.0f, 0.5);
-	//glVertex3i(-10, -5, -10);
-	//glVertex3i(-20, -5, -10);
-	//glVertex3i(-15, 7, -15);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(1.0f, 0.0f, 0.5f, 0.5);
-	//glVertex3i(-20, -5, -10);
-	//glVertex3i(-20, -5, -20);
-	//glVertex3i(-15, 7, -15);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(0.0f, 0.5f, 1.0f, 0.5);
-	//glVertex3i(-10, -5, -20);
-	//glVertex3i(-20, -5, -20);
-	//glVertex3i(-15, 7, -15);
-	//glEnd();
-
-
-
-	//piramide Miquerinos
-	//
-	//glBegin(GL_QUADS);
-	//glColor3f(0, 0, 0);
-	//glVertex3i(7, -5, 7);
-	//glVertex3i(12, -5, 7);
-	//glVertex3i(12, -5, 12);
-	//glVertex3i(7, -5, 12);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(0.5f, 1.0f, 0.0f, 0.5);
-	//glVertex3i(12, -5, 7);
-	//glVertex3i(12, -5, 12);
-	//glVertex3i(9.5, 2.5, 9.5);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(0.0f, 1.0f, 0.5f, 0.5);
-	//glVertex3i(7, -5, 12);
-	//glVertex3i(12, -5, 12);
-	//glVertex3i(9.5, 2.5, 9.5);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(1.0f, 0.5f, 0.0f, 0.5);
-	//glVertex3i(7, -5, 7);
-	//glVertex3i(7, -5, 12);
-	//glVertex3i(9.5, 2.5, 9.5);
-	//glEnd();
-	//
-	//glBegin(GL_TRIANGLES);
-	//
-	//glColor4f(0.5f, 1.0f, 0.5f, 0.5);
-	//glVertex3i(7, -5, 7);
-	//glVertex3i(12, -5, 7);
-	//glVertex3i(9.5, 2.5, 9.5);
-	//glEnd();
-
-	cout << ang << endl;
+	player.Draw();
 }
 
 //Callback de erro - PADRÃO DA GLFW - não precisa mexer
@@ -273,7 +140,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (key == GLFW_KEY_LEFT)
 		ang += 5;
-
+	
 	if (key == GLFW_KEY_RIGHT)
 		ang -= 5;
 
@@ -282,20 +149,21 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 	if (key == GLFW_KEY_P && action == GLFW_PRESS)
 		proj = 1;
-	if (key == GLFW_KEY_W)
-		posZAtual -= 5;
-	if (key == GLFW_KEY_S)
-		posZAtual += 5;
-	//if (key == GLFW_KEY_A)
-	//	posXAtual += 1;
-	//if (key == GLFW_KEY_D)
-	//	posXAtual -= 1;
+	if (key == GLFW_KEY_W && action == GLFW_PRESS)
+		player.z += 10;
+		//posZAtual += 1;
+	/*if (key == GLFW_KEY_S && action == GLFW_PRESS)
+		player.z -= 10;
+	if (key == GLFW_KEY_A)
+		posXAtual += 1;
+	if (key == GLFW_KEY_D)
+		posXAtual -= 1;*/
 }
 
 // Programa Principal 
 int main()
 {
-	
+	srand(time(NULL));
 	GLFWwindow* window; //Inicialização da janela da aplicação
 	glfwSetErrorCallback(error_callback); //Setando a callback de erro - PADRÃO
 
@@ -318,10 +186,31 @@ int main()
 	//Setando a callback de teclado
 	glfwSetKeyCallback(window, key_callback);
 	ajustaCamera2D(1280, 720);
+
+	for (int i = 0; i < MAX_ROAD; i++)
+	{
+		roads[i] = inicializaRoad(roads[i]);
+
+	}
+
+	float time = (float)glfwGetTime();
+	float tprev = 0;
+
+	player.x = 0;
+	player.y = 0;
+	player.z = 0;
+
 	while (!glfwWindowShouldClose(window)) //loop da aplicação :)
 	{
 		float ratio;
 		int width, height;
+
+		tprev = time;
+		time = (float)glfwGetTime();
+
+		timer = time - tprev;
+
+		//printf("time=%f\n", timer);
 
 		//aqui recupera o tamanho atual da janela, para correção do aspect ratio mais tarde
 		glfwGetFramebufferSize(window, &width, &height);
@@ -341,7 +230,6 @@ int main()
 		glLoadIdentity();
 
 		DesenhaCena();
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
